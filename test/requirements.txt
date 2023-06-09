@@ -1,0 +1,22 @@
+# Semua token dalam dokumen bukan OOV
+- Skip => (None)
+
+# Semua token dalam dokumen adalah OOV
+- Buat semuanya menjadi OOV token => [[(OOV, True)], [(OOV, True)], [(OOV, True)]]
+
+# Ketika OOV berada di awal dokumen
+- Jika token sebelah kanan OOV adalah OOV juga, maka return OOV tanpa left dan right context => [[(OOV, True)]]
+- Jika sebelah kanan bukan OOV, maka ambil sejauh munkin token sebelah kanan sampai ketemu OOV atau akhir dokumen. => [[(T, False), (T, False), (OOV, True), (T, False), (T, False)]]
+
+# Ketika OOV berada di akhir dokumen
+- Jika token sebelah kiri OOV adalah OOV juga, maka return OOV tanpa left dan right context => [[(OOV, True)]]
+- Jika sebelah kiri bukan OOV, maka ambil sejauh munkin token sebelah kiri sampai ketemu OOV atau akhir dokumen. => [[(T, False), (T, False), (OOV, True), (T, False), (T, False)]]
+
+# Ketika OOV berada ditengah
+- Cek kiri atau kanan OOV atau tidak => [[(OOV, True)], [(OOV, True)]]
+- jika kiri OOV maka ambil right context saja sampai ketemu OOV => [[(OOV, True), (T, False), (T, False)], [(OOV, True), (T, False), (T, False)]]
+- jika kanan OOV maka ambil left context saja sampai ketemu OOV => [[(T, False), (T, False), (T, True)], [(OOV, True), (T, False), (T, False)]]
+- jika kiri dan kanan OOV makan ambil OOV saja. => [[(OOV, True)], [(OOV, True)]]
+
+# Ketika context size lebih besar dari pada ukuran dokumen
+- ??
