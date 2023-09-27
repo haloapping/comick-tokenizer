@@ -14,7 +14,9 @@ class Util:
                 elif mode == "pre":
                     doc.insert(0, padding_val)
                 else:
-                    raise ValueError(f"mode = {mode} is not available, use instead 'pre' or 'post'.")
+                    raise ValueError(
+                        f"mode = {mode} is not available, use instead 'pre' or 'post'."
+                    )
             pad_docs.append(doc)
 
         return pad_docs
@@ -23,7 +25,7 @@ class Util:
         return sorted(list(set(tokens)))
 
     def token_to_idx(self, vocabs):
-        return {vocab : idx for idx, vocab in enumerate(vocabs)}
+        return {vocab: idx for idx, vocab in enumerate(vocabs)}
 
     def idx_to_token(self, vocabs):
-        return {idx : vocab for idx, vocab in enumerate(vocabs)}
+        return {idx: vocab for idx, vocab in enumerate(vocabs)}

@@ -1,5 +1,6 @@
 from tqdm import tqdm
 
+
 class OOVNgrams:
     def create_ngrams(self, docs, context_size):
         oov_docs = []
@@ -7,7 +8,7 @@ class OOVNgrams:
         for doc in tqdm(docs):
             # get all idx oov token
             oov_idxs = [idx for idx, token in enumerate(doc) if token[1] is True]
-            
+
             # All token in doc is not OOV
             if len(oov_idxs) == 0:
                 continue
@@ -25,11 +26,15 @@ class OOVNgrams:
                         if doc[oov_idx + 1][1] is True:
                             oov_doc.append(doc[oov_idx])
                         else:
-                            for idx in range(len(doc) if len(doc) <= context_size else context_size + 1):
+                            for idx in range(
+                                len(doc)
+                                if len(doc) <= context_size
+                                else context_size + 1
+                            ):
                                 if idx == 0 or doc[idx][1] is False:
                                     oov_doc.append(doc[idx])
                         oov_docs.append(oov_doc)
-                    
+
                     # OOV at the end
                     elif oov_idx == len(doc) - 1:
                         oov_doc = []
@@ -37,17 +42,22 @@ class OOVNgrams:
                         if doc[oov_idx - 1][1] is True:
                             oov_doc.append(doc[oov_idx])
                         else:
-                            for idx in range(0 if len(doc) <= context_size else oov_idx - context_size, oov_idx + 1):
+                            for idx in range(
+                                0
+                                if len(doc) <= context_size
+                                else oov_idx - context_size,
+                                oov_idx + 1,
+                            ):
                                 if idx == len(doc) - 1 or doc[idx][1] is False:
                                     oov_doc.append(doc[idx])
                         oov_docs.append(oov_doc)
-                    
+
                     # OOV at the middle
                     else:
                         left_idx = oov_idx - 1
                         left_context = []
                         left_context_size_limit = 0
-                        
+
                         while left_idx >= 0 and doc[left_idx][1] is False:
                             if left_context_size_limit == context_size:
                                 break
@@ -59,7 +69,7 @@ class OOVNgrams:
                         right_idx = oov_idx + 1
                         right_context = []
                         right_context_size_limit = 0
-                        
+
                         while right_idx < len(doc) and doc[right_idx][1] is False:
                             if right_context_size_limit == context_size:
                                 break
@@ -67,31 +77,34 @@ class OOVNgrams:
                             right_context.append(doc[right_idx])
                             right_idx += 1
                             right_context_size_limit += 1
-                                                
+
                         oov_docs.append(left_context + [doc[oov_idx]] + right_context)
 
         return oov_docs
-            
 
     def split_ngrams(self, ngrams, lowercase=True, split_token=True):
         contexts = []
 
         for ngram in tqdm(ngrams):
             oov_idx = [idx for idx, token in enumerate(ngram) if token[1] is True][0]
-            
+
             if lowercase:
                 oov_context = ngram[oov_idx][0].lower()
-            
+
             if split_token:
-                oov_context = ["UNK" if char == " " else char for char in list(oov_context)]
+                oov_context = [
+                    "UNK" if char == " " else char for char in list(oov_context)
+                ]
             else:
                 oov_context = [oov_context]
 
-            contexts.append((
-                [token[0] for token in ngram[:oov_idx]],
-                oov_context,
-                [token[0] for token in ngram[oov_idx + 1:]]
-            ))
+            contexts.append(
+                (
+                    [token[0] for token in ngram[:oov_idx]],
+                    oov_context,
+                    [token[0] for token in ngram[oov_idx + 1 :]],
+                )
+            )
 
         return contexts
 
@@ -99,7 +112,7 @@ class OOVNgrams:
         ngrams_docs = self.split_ngrams(ngrams)
 
         return [doc[0] for doc in ngrams_docs]
-    
+
     def right_context(self, ngrams):
         ngrams_docs = self.split_ngrams(ngrams)
 
@@ -109,4 +122,3 @@ class OOVNgrams:
         ngrams_docs = self.split_ngrams(ngrams, lowercase, split_token)
 
         return [doc[1] for doc in ngrams_docs]
-        
